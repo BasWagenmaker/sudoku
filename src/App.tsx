@@ -1,42 +1,35 @@
 import "./app.css";
-import { useEffect, useState } from "react";
-import { Board } from "./components/board";
-import { solve } from "./solver/test";
+import { useState } from "react";
+import { clone, solve } from "./utils";
+import { EMPTY_PUZZLE, DEFAULT_PUZZLE } from "./constants";
+import { Alert, Board } from "./components";
 
-const DEFAULT_PUZZLE = [
-  [8, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 3, 6, 0, 0, 0, 0, 0],
-  [0, 7, 0, 0, 9, 0, 2, 0, 0],
-  [0, 5, 0, 0, 0, 7, 0, 0, 0],
-  [0, 0, 0, 0, 4, 5, 7, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 3, 0],
-  [0, 0, 1, 0, 0, 0, 0, 6, 8],
-  [0, 0, 8, 5, 0, 0, 0, 1, 0],
-  [0, 9, 0, 0, 0, 0, 4, 0, 0],
-];
-
-const clone = (object: unknown) => JSON.parse(JSON.stringify(object));
-
-function App() {
-  const [puzzle, setPuzzle] = useState(clone(DEFAULT_PUZZLE));
+const App = () => {
+  const [puzzle, setPuzzle] = useState<number[][]>(clone(DEFAULT_PUZZLE));
   const [activeCell, setActiveCell] = useState<[number, number]>([-1, -1]);
-  const handleChangeActiveCell = (rowIndex, columnIndex) => {
+  const [error, setError] = useState(false);
+
+  const handleChangeActiveCell = (rowIndex: number, columnIndex: number) => {
     if (activeCell[0] === rowIndex && activeCell[1] === columnIndex)
       setActiveCell([-1, -1]);
     else setActiveCell([rowIndex, columnIndex]);
   };
 
-  const solvePuzzle = () => {
+  const handleSolve = () => {
     const result = solve(puzzle);
     if (result) setPuzzle(clone(result));
-    else alert("Not possible");
+    else setError(true);
   };
 
-  const resetPuzzle = () => {
-    setPuzzle(clone(DEFAULT_PUZZLE));
+  const handleResetPuzzle = () => {
+    setError(false);
+    setPuzzle(clone(EMPTY_PUZZLE));
   };
 
-  const handleChangeCell = (event: any) => {
+  const handleChangeCell = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setError(false);
     const UPDATED_PUZZLE = clone(puzzle);
     UPDATED_PUZZLE[activeCell[0]][activeCell[1]] = event.currentTarget.value;
     setPuzzle(UPDATED_PUZZLE);
@@ -49,7 +42,7 @@ function App() {
         changeActiveCell={handleChangeActiveCell}
         activeCell={activeCell}
       />
-
+      {/* To-do: move number buttons to seperate component(s) */}
       <div className="container mx-auto w-80 text-center grid grid-cols-5 text-center gap-x-4">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((value: number) => (
           <button
@@ -80,23 +73,24 @@ function App() {
           </button>
         ))}
       </div>
-
-      <div className="container w-auto mt-4 text-center">
+      {/* To-do: move util buttons to seperate component(s) */}
+      <div className="container w-auto mt-4 mb-4 text-center">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mx-4 rounded"
-          onClick={solvePuzzle}
+          onClick={handleSolve}
         >
           Solve
         </button>
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={resetPuzzle}
+          onClick={handleResetPuzzle}
         >
           Reset
         </button>
       </div>
+      {error ? <Alert /> : ""}
     </>
   );
-}
+};
 
 export default App;

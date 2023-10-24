@@ -3,7 +3,7 @@ interface CellProps {
   value: number;
   rowIndex: number;
   columnIndex: number;
-  onClick: any;
+  onClick: (rowIndex: number, columnIndex: number) => void;
   active: boolean;
 }
 
@@ -17,7 +17,7 @@ export function Cell({
   const index = columnIndex + rowIndex * 9;
 
   const cellClasses = classNames({
-    "border": true,
+    border: true,
     "border-slate-200": true,
     "border-r-4": [2, 5].includes(columnIndex),
     "border-b-4": [2, 5].includes(rowIndex),

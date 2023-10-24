@@ -2,14 +2,14 @@ import { Cell } from "..";
 
 interface BoardProps {
   puzzle: number[][];
-  changeActiveCell: any;
+  changeActiveCell: (rowIndex: number, columnIndex: number) => void;
   activeCell: [number, number];
 }
 
 export const Board = ({ puzzle, changeActiveCell, activeCell }: BoardProps) => {
   return (
-    <div className="container w-96 xl:w-auto drop-shadow-md">
-      <table className="mx-auto">
+    <div className="container w-96 xl:w-auto drop-shadow-md ">
+      <table className="mx-auto overflow-hidden rounded-md">
         <tbody>
           {puzzle.map((row: number[], rowIndex: number) => (
             <tr key={rowIndex}>
